@@ -8,12 +8,12 @@
 
 interface if_DUT_monitor #(parameter D_PUSH_BITS=32)(input logic clk, input logic reset);
 
-logic [D_PUSH_BITS-1:0] dato;
+logic [D_PUSH_BITS-1:0] d_push;
 logic push;
 
 
-modport DUT (output dato, output push);
-modport monitor (input dato, input push);
+modport DUT (output d_push, output push);
+modport monitor (input d_push, input push);
 
 //emulando fifo
 
@@ -22,7 +22,7 @@ modport monitor (input dato, input push);
     if (reset) begin
       fifo_emulador.delete();
     end else if (push) begin
-      fifo_emulador.push_back(dato);
+      fifo_emulador.push_back(d_push);
     end
   end
 endinterface
