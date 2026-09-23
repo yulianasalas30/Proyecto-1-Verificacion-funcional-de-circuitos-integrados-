@@ -13,7 +13,7 @@ logic push;
 
 
 modport DUT (output d_push, output push);
-modport monitor (input d_push, input push);
+modport monitor (input d_push, input push, input clk, input reset);
 
 //emulando fifo
 
