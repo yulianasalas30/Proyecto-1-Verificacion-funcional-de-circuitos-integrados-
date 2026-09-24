@@ -19,7 +19,7 @@ class bus_monitor_2_ch #(int D_PUSH_BITS = 32,int ID_SIZE = 8);
             if (vif.reset)
                 continue;
             if (vif.push) begin //si hay un push se envia el mailbox al checker 
-                correo = new(vif.d_push);
+                correo= new(vif.d_push);
                 mon2ch.put(correo);
             end
         end
