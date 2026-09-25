@@ -9,7 +9,7 @@ interface bus_if #(
   input bit clk
 );
 
-  logic               reset;  
+  logic               reset;   
 
   logic               pndng [DRVRS-1:0];
   logic               push  [DRVRS-1:0];
