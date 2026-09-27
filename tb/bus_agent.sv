@@ -4,12 +4,12 @@
 //======================================================================
 package bus_agent_pkg;
 
-  import bus_params_pkg::*;
+  import bus_params_pkg::*; //para PCKG_SZ
   import bus_config_pkg::*;
   import bus_txn_pkg::*;
 
   // ------------------------------------------------------------------
-  // Tabla "Agente -> Driver"
+  // Paquete "Agente -> Driver"
   // ------------------------------------------------------------------
   class bus_drv_pkt;
     int unsigned          terminal;    
@@ -24,7 +24,7 @@ package bus_agent_pkg;
   endclass : bus_drv_pkt
 
   // ------------------------------------------------------------------
-  // Tabla "Agente -> Scoreboard"
+  // Paquete "Agente -> Scoreboard"
   // ------------------------------------------------------------------
   class bus_sb_pkt;
     int unsigned          source;
@@ -46,9 +46,9 @@ package bus_agent_pkg;
 
     local bus_config cfg;
 
-    mailbox #(bus_txn)      gen2agt;          
-    mailbox #(bus_drv_pkt)  agt2drv[];       
-    mailbox #(bus_sb_pkt)   agt2sb [];        
+    mailbox #(bus_txn)      gen2agt;       //solo un mailbox, del generador    
+    mailbox #(bus_drv_pkt)  agt2drv[];   //lista de mailboxes, uno por cada terminal
+    mailbox #(bus_sb_pkt)   agt2sb [];   // lista de mailboxes, uno por cada terminal
 
     function new(mailbox #(bus_txn)     gen2agt_,
                  mailbox #(bus_drv_pkt) agt2drv_[],
@@ -71,6 +71,10 @@ package bus_agent_pkg;
       return dp;
     endfunction
 
+     // ------------------------------------------------------------------
+    // Empaca un bus_txn en su bus_sb_pkt correspondiente
+    // ------------------------------------------------------------------
+
     function bus_sb_pkt to_sb_pkt(bus_txn txn, int unsigned dest,
                                    bit [PCKG_SZ-1:0] packed_packet);
       bus_sb_pkt sp = new();
@@ -88,17 +92,18 @@ package bus_agent_pkg;
       bus_drv_pkt dp;
 
       forever begin
-        gen2agt.get(txn);
+        gen2agt.get(txn); //espera a que el generador le mande una transaccion
         if (cfg.verbose) txn.print("AGT<-GEN");
 
-        dp = to_drv_pkt(txn);
-        agt2drv[txn.source].put(dp);
+        dp = to_drv_pkt(txn);  //empaquetamos la transaccion para el driver
+        agt2drv[txn.source].put(dp); //la ponemos en la posicion del mailbox correspondiente a la terminal
+        //si es un  caso de broadcast el dut se encarga de enviar a todos las terminales
 
         
 
         case (txn.dest_cat)
           DEST_BCAST: begin
-            // Copia esperada hacia CADA terminal (todas deben recibir).
+            // Coaso broadcast: el agente envia a todos los scoreboards, incluso al del mismo source. Esto es intencional: el testplan dice que el DUT debe recibir su propio broadcast.
             foreach (agt2sb[j])
               agt2sb[j].put(to_sb_pkt(txn, j, dp.packet));
           end
