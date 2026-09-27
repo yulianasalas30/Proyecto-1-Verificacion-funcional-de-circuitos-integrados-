@@ -72,7 +72,7 @@ package bus_monitor_pkg;
         if (queue_out.size() == 0) begin
           n_underflow++;
           if (cfg.verbose)
-            `INFO("MON", $sformatf("term=%0d intento de lectura con FIFO_out vacia (underflow)", id))
+            //`INFO("MON", $sformatf("term=%0d intento de lectura con FIFO_out vacia (underflow)", id))
           continue;
         end
 
