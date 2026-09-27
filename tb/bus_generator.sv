@@ -1,7 +1,7 @@
 //======================================================================
 // bus_generator.sv
 //----------------------------------------------------------------------
-
+// 
 //======================================================================
 package bus_generator_pkg;
 
@@ -32,14 +32,14 @@ package bus_generator_pkg;
         if (cfg.verbose)
           `INFO("GEN", $sformatf("terminal %0d generara %0d transacciones", i, n_txn[i]))
         repeat (n_txn[i]) order.push_back(i); //llenamos el arreglo con la cantidad de transacciones que le tocan a cada terminal
-        //Si a la terminal 2 le tocaron 5 transacciones, quedan 5 copias del número 2 en order
+        //Si a la terminal 2 le tocaron 5 transacciones, quedan 5 copias del número 2 en order 
       end
-
       // 2) mezclamos el orden de las transacciones para que no salgan todas de la misma terminal seguidas
       order.shuffle(); 
 
       if (cfg.verbose)
         `INFO("GEN", $sformatf("total de transacciones a generar: %0d", order.size()))
+      
 
       // 3) generamos las transacciones en el orden mezclado y se las enviamos al agente
 

@@ -74,6 +74,7 @@ module tb_top;
     env.connect(vif);
     env.build();
     env.run();      // run() llama $finish al terminar, no hace falta aqui
+       $monitor("[%0t] reset=%b", $time, vif.reset);
   end
 
 endmodule : tb_top
