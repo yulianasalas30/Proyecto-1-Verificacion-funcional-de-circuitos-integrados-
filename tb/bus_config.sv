@@ -15,7 +15,7 @@ package bus_config_pkg;
     int unsigned reset_cycles  = 5;     // +reset_cycles=  duracion del reset inicial
     int unsigned drain_cycles  = 50;    // +drain_cycles=  ciclos de idle al final del test
     int unsigned timeout       = 200000;// +timeout=       watchdog, en ciclos de reloj
-    int unsigned verbose       = 0;     // +verbose=1      imprime cada transaccion
+    int unsigned verbose       = 1;     // +verbose=1      imprime cada transaccion
 
     //--------------------------------------------------------------------
     // 2) Reset a mitad de simulacion (caso esquina: "reset con
