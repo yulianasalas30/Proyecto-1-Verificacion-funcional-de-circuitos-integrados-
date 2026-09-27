@@ -1,8 +1,3 @@
-//======================================================================
-// bus_env.sv
-//----------------------------------------------------------------------
-// 
-//======================================================================
 package bus_env_pkg;
 
   import bus_params_pkg::*;
@@ -18,30 +13,28 @@ package bus_env_pkg;
   class bus_env;
 
     local bus_config      cfg;
-    local virtual bus_if   vif;  
+    local virtual bus_if   vif;
 
     bus_generator  gen;
     bus_agent      agt;
-    bus_driver     drv[];         // dinamico, tamano DRVRS
+    bus_driver     drv[];
     bus_monitor    mon[];
     bus_scoreboard sb [];
     bus_checker    chk[];
 
     mailbox #(bus_txn)     gen2agt;
     mailbox #(bus_drv_pkt) agt2drv[];
-    mailbox #(bus_sb_pkt)  agt2sb [];   
-    mailbox #(bus_chk_pkt) mon2chk [];  
+    mailbox #(bus_sb_pkt)  agt2sb [];
+    mailbox #(bus_chk_pkt) mon2chk [];
 
     function new();
       cfg = bus_config::get();
     endfunction
 
-    
     function void connect(virtual bus_if vif_);
       this.vif = vif_;
     endfunction
 
-    // Crea todos los mailboxes y componentes, y los conecta entre si.
     function void build();
       gen2agt = new();
       agt2drv = new[DRVRS];
@@ -77,12 +70,6 @@ package bus_env_pkg;
       end
     endfunction
 
-    // ------------------------------------------------------------------
-    // Reset inicial. SOLO bus_env toca vif.cb_env.reset -- ninguna
-    // instancia de bus_driver/bus_monitor lo hace (ver discusion en el
-    // chat: con M instancias no tiene sentido que cada una controle
-    // reset por su cuenta).
-    // ------------------------------------------------------------------
     task apply_reset();
       vif.cb_env.reset <= 1'b1;
       repeat (cfg.reset_cycles) @(vif.cb_env);
@@ -91,11 +78,6 @@ package bus_env_pkg;
       if (cfg.verbose) `INFO("ENV", "reset inicial completo")
     endtask
 
-    // Caso esquina "reset con transacciones pendientes en alguna FIFO":
-    // aplica cfg.n_mid_resets resets adicionales en momentos aleatorios
-    // durante la simulacion, y vacia las colas/estado de cada
-    // componente despues de cada uno (el scoreboard no guarda estado
-    // propio, pero se llama igual por si eso cambia mas adelante).
     task mid_resets();
       repeat (cfg.n_mid_resets) begin
         repeat ($urandom_range(cfg.max_delay, cfg.min_delay)) @(vif.cb_env);
@@ -108,23 +90,16 @@ package bus_env_pkg;
         foreach (drv[i]) drv[i].flush();
         foreach (mon[i]) mon[i].flush();
         foreach (sb[i])  sb[i].flush();
+        foreach (chk[i]) chk[i].flush();
       end
     endtask
 
-    // Fuerza el fin de la simulacion si nadie mas lo hizo antes de
-    // cfg.timeout ciclos -- protege contra quedarse colgado por un
-    // mailbox que nunca recibe su .put() esperado.
     task watchdog();
       repeat (cfg.timeout) @(vif.cb_env);
       `ERR("ENV", "TIMEOUT: la simulacion no completo a tiempo")
       $finish;
     endtask
 
-    // ------------------------------------------------------------------
-    // Reporte final: cada checker imprime su resumen, se exporta un
-    // solo CSV con el historial de matches de las M terminales, y se
-    // decide PASS/FAIL global sumando fail_count().
-    // ------------------------------------------------------------------
     function void final_report();
       int unsigned total_fail = 0;
       int fd;
@@ -149,14 +124,11 @@ package bus_env_pkg;
       $display("==========================================================");
     endfunction
 
-    // ------------------------------------------------------------------
     task run();
       cfg.print();
 
       apply_reset();
 
-      
-      
       fork
         agt.run();
         foreach (drv[i]) drv[i].run();
@@ -167,10 +139,19 @@ package bus_env_pkg;
         watchdog();
       join_none
 
-      
       gen.run();
 
-      if (cfg.verbose) `INFO("ENV", "generacion completa, drenando")
+      if (cfg.verbose) `INFO("ENV", "generacion completa, esperando FIFO_in vacias")
+      begin
+        bit all_empty;
+        do begin
+          all_empty = 1;
+          foreach (drv[i]) if (drv[i].pending_count() != 0) all_empty = 0;
+          if (!all_empty) @(vif.cb_env);
+        end while (!all_empty);
+      end
+
+      if (cfg.verbose) `INFO("ENV", "drenando")
       repeat (cfg.drain_cycles) @(vif.cb_env);
 
       final_report();
