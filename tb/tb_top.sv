@@ -1,4 +1,4 @@
-`include "bus_defines.svh"
+`include "tb/bus_defines.svh"
 
 module tb_top;
 
