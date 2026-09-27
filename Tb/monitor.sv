@@ -9,7 +9,7 @@ class monitor #(int D_PUSH_BITS = 32, int ID_SIZE=8);
   time t_obs;
 
  
-  function new(logic [D_PUSH_BITS-1:0] d_push_i);
+  function new(logic [D_PUSH_BITS-1:0] d_push_i, time t_i = $time);
     this.id= d_push_i[D_PUSH_BITS-1 : D_PUSH_BITS-ID_SIZE];
     this.d_push = d_push_i[D_PUSH_BITS-ID_SIZE-1:0];
     this.t_obs = t_i;

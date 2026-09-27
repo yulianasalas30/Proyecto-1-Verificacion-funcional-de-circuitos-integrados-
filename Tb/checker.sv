@@ -1,7 +1,7 @@
 class checker #(int D_PUSH_BITS = 32, int ID_SIZE = 8, int N_DEV = 4,
                  int BROADCAST_ID = 255);
  
-  typedef monitor    #(D_PUSH_BITS, ID_SIZE)                       obs_txn_t;
+  typedef monitor #(D_PUSH_BITS, ID_SIZE) obs_txn_t;
   typedef scoreboard #(D_PUSH_BITS, ID_SIZE, N_DEV, BROADCAST_ID)  sb_t;
   typedef sb_t::exp_txn_t; 
  
