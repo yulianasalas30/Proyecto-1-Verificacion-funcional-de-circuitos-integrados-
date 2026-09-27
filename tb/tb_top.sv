@@ -1,25 +1,13 @@
-//======================================================================
-// tb_top.sv
-//----------------------------------------------------------------------
-
-//======================================================================
-
-`include "tb/bus_defines.svh"
+`include "bus_defines.svh"
 
 module tb_top;
 
-  import bus_params_pkg::*;  //para DRVRS, PCKG_SZ
-  import bus_env_pkg::*;  //para bus_env
+  import bus_params_pkg::*;
+  import bus_env_pkg::*;
 
-  // ------------------------------------------------------------------
-  // Reloj
-  // ------------------------------------------------------------------
   bit clk = 0;
   always #(`CLK_PERIOD/2.0) clk = ~clk;
 
-  // ------------------------------------------------------------------
-  // Interfaz.
-  // ------------------------------------------------------------------
   bus_if #(.DRVRS(DRVRS), .PCKG_SZ(PCKG_SZ)) vif (clk);
 
   logic               pndng2d [0:0][DRVRS-1:0];
@@ -39,11 +27,6 @@ module tb_top;
     end
   endgenerate
 
-  // ------------------------------------------------------------------
-  // DUT. broadcast=BCAST_ID (8'hFF, de bus_params_pkg) para que el
-  // patron reservado de broadcast coincida exactamente con el que
-  // bus_txn/bus_agent ya asumen.
-  // ------------------------------------------------------------------
   bs_gnrtr_n_rbtr #(
     .bits      (1),
     .drvrs     (DRVRS),
@@ -59,31 +42,18 @@ module tb_top;
     .D_push (D_push2d)
   );
 
-  // ------------------------------------------------------------------
-  // Ambiente de verificacion.
-  // ------------------------------------------------------------------
   bus_env env;
 
   initial begin
     $display("==========================================================");
     $display(" bus_gnrtr_n_rbtr testbench   DRVRS=%0d  PCKG_SZ=%0d  CLK=%0dns",
               DRVRS, PCKG_SZ, `CLK_PERIOD);
-   $display("==========================================================");
+    $display("==========================================================");
 
-    $monitor("[%0t] reset=%b cnt_rbtr=%0d bs_grnt0=%b bs_bsy=%b trn_chng=%b",
-              $time,
-             vif.reset,
-             dut.BUS[0].ID[0].ntrfs.cntrl.cnt_rbtr,
-              dut.BUS[0].ID[0].ntrfs.bs_grnt,
-              dut.BUS[0].bs_bsy,
-             dut.BUS[0].trn_chng);
-
-   env = new();
+    env = new();
     env.connect(vif);
-   env.build();
-  env.run();      // run() llama $finish al terminar, no hace falta aqui
+    env.build();
+    env.run();
   end
-
- 
 
 endmodule : tb_top
