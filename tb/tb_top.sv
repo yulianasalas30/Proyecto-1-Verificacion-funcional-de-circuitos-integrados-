@@ -71,12 +71,12 @@ module tb_top;
    $display("==========================================================");
 
     $monitor("[%0t] reset=%b cnt_rbtr=%0d bs_grnt0=%b bs_bsy=%b trn_chng=%b",
-              $time,
-             vif.reset,
-             dut.BUS[0].ID[0].ntrfs.cntrl.cnt_rbtr,
-              dut.BUS[0].ID[0].ntrfs.bs_grnt,
-              dut.BUS[0].bs_bsy,
-             dut.BUS[0].trn_chng);
+          $time,
+          vif.reset,
+          dut.BUS[0].ID[0].ntrfs.cntrl.cnt_rbtr,
+          dut.BUS[0].ID[0].ntrfs.bs_grnt,
+          dut.bs_bsy[0],
+          dut.trn_chng[0]);
 
    env = new();
     env.connect(vif);
