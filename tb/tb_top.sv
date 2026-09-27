@@ -4,7 +4,7 @@
 
 //======================================================================
 `timescale 1ns/1ps
-`include "bus_defines.svh"
+`include "tb/bus_defines.svh"
 
 module tb_top;
 
