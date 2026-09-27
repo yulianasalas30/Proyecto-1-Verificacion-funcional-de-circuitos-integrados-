@@ -61,8 +61,7 @@ package bus_env_pkg;
       agt = new(gen2agt, agt2drv, agt2sb);
 
       foreach (drv[i]) begin
-        drv[i] = new();
-        drv[i].build(i, vif, agt2drv[i]);
+        drv[i] = new(i, vif, agt2drv[i]);
       end
 
       foreach (mon[i]) begin
@@ -109,7 +108,6 @@ package bus_env_pkg;
         foreach (drv[i]) drv[i].flush();
         foreach (mon[i]) mon[i].flush();
         foreach (sb[i])  sb[i].flush();
-        foreach (chk[i]) chk[i].flush();
       end
     endtask
 
