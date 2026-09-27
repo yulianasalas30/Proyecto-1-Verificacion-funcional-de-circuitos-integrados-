@@ -6,7 +6,7 @@
 // compilarse ANTES de bus_if.sv, bus_txn.sv y cualquier otro archivo
 // que haga `import bus_params_pkg::*;`.
 //======================================================================
-`include "bus_defines.svh"
+`include "tb/bus_defines.svh"
 
 package bus_params_pkg;
 

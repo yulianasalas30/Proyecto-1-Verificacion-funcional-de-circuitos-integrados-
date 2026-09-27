@@ -1,5 +1,5 @@
 
-`include "bus_defines.svh"
+`include "tb/bus_defines.svh"
 
 interface bus_if #(
   parameter int DRVRS   = `BUS_DRVRS,   // M: cantidad de terminales/dispositivos
