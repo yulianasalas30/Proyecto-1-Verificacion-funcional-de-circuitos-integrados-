@@ -3,8 +3,8 @@ package bus_checker_pkg;
   import bus_config_pkg::*; //para .verbose
   import bus_monitor_pkg::*; //para bus_chk_pkt
   import bus_scoreboard_pkg::*;  //para la clase bus_scoreboard y accede a un a find_and_pop()
-  import bus_sb_pkt::*;
-  
+  import bus_agent_pkg::*; //para bus_sb_pkt
+
   typedef struct {
     int unsigned source;
     int unsigned destination;
