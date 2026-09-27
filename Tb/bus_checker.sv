@@ -3,6 +3,7 @@ package bus_checker_pkg;
   import bus_config_pkg::*;
   import bus_monitor_pkg::*;
   import bus_scoreboard_pkg::*;
+  import bus_agent_pkg::*;
 
   typedef struct {
     int unsigned source;
