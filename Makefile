@@ -10,7 +10,7 @@
 
 # Antes de usar make correr este comando:
 # source /mnt/vol_NFS_rh003/estudiantes/archivos_config/synopsys_tools2.sh
-
+#se puede cambiar la semilla escribiendo por ejemplo make base SEED=7
  
 VCS      = vcs
 SIMV     = ./simv
