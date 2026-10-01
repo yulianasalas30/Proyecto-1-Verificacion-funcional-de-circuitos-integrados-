@@ -48,11 +48,11 @@ package bus_agent_pkg;
 
     mailbox #(bus_txn)      gen2agt;       //solo un mailbox, del generador    
     mailbox #(bus_drv_pkt)  agt2drv[];   //lista de mailboxes, uno por cada terminal
-    mailbox #(bus_sb_pkt)   agt2sb [];   // lista de mailboxes, uno por cada terminal
+    mailbox #(bus_sb_pkt)   agt2sb;      // un solo mailbox hacia el scoreboard unico
 
     function new(mailbox #(bus_txn)     gen2agt_,
                  mailbox #(bus_drv_pkt) agt2drv_[],
-                 mailbox #(bus_sb_pkt)  agt2sb_ []);
+                 mailbox #(bus_sb_pkt)  agt2sb_);
       this.gen2agt = gen2agt_;
       this.agt2drv = agt2drv_;
       this.agt2sb  = agt2sb_;
@@ -104,11 +104,12 @@ package bus_agent_pkg;
         case (txn.dest_cat)
           DEST_BCAST: begin
             // Coaso broadcast: el agente envia a todos los scoreboards, incluso al del mismo source. Esto es intencional: el testplan dice que el DUT debe recibir su propio broadcast.
-            foreach (agt2sb[j])
-              agt2sb[j].put(to_sb_pkt(txn, j, dp.packet));
+            // el scoreboard usa "destination" para elegir la cola de la terminal j
+            for (int j = 0; j < DRVRS; j++)
+              agt2sb.put(to_sb_pkt(txn, j, dp.packet));
           end
           DEST_VALID: begin
-            agt2sb[txn.destination].put(to_sb_pkt(txn, txn.destination, dp.packet));
+            agt2sb.put(to_sb_pkt(txn, txn.destination, dp.packet));
           end
           DEST_INVALID: begin
            
