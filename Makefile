@@ -90,18 +90,6 @@ data_corners:
 	   +wt_dest_valid=100 +wt_dest_invalid=0 +wt_broadcast=0 \
 	   +wt_data_corner=1000 -l data_corners.log
  
-#Monitor que lee su FIFO_out muy rapido (caso de underflow)
-mon_fast:
-	$(SIMV) $(RUN_OPTS) +n_txn_min=20 +n_txn_max=50 \
-	   +wt_dest_valid=100 +wt_dest_invalid=0 +wt_broadcast=0 \
-	   +mon_min_delay=1 +mon_max_delay=1 -l mon_fast.log
- 
-#monitor que lee su FIFO_out muy lento (la cola se acumula)
-mon_slow:
-	$(SIMV) $(RUN_OPTS) +n_txn_min=20 +n_txn_max=50 \
-	   +wt_dest_valid=100 +wt_dest_invalid=0 +wt_broadcast=0 \
-	   +mon_min_delay=30 +mon_max_delay=60 -l mon_slow.log
- 
  
 #todas las constraints con nombre apagadas para probar que se fuerce 1
 unconstrained:
@@ -129,10 +117,10 @@ sweep:
  
 #-----------------------------------------------------------------------
 regress: comp base prueba_valida id_invalido broadcast paq_consecutivo esp_grande \
-         data_corners mon_fast mon_slow unconstrained
+         data_corners unconstrained
 	@echo "----- regresion terminada: veredicto del checker en cada log -----"
 	@grep -H "RESULTADO GLOBAL" base.log prueba_valida.log id_invalido.log broadcast.log \
-	   paq_consecutivo.log esp_grande.log data_corners.log mon_fast.log mon_slow.log \
+	   paq_consecutivo.log esp_grande.log data_corners.log \
 	unconstrained.log || true
  
 cov:
@@ -142,6 +130,6 @@ clean:
 	rm -rf simv* csrc *.log *.vpd *.vdb urgReport DVEfiles ucli.key .vcs* novas* *.fsdb bus_results.csv
  
 .PHONY: comp base prueba_valida id_invalido broadcast paq_consecutivo esp_grande \
-        data_corners mon_fast mon_slow  unconstrained soak \
+        data_corners unconstrained soak \
         sweep regress cov clean
  

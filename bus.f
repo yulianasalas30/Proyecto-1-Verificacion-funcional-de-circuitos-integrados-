@@ -11,6 +11,7 @@ tb/bus_generator.sv
 tb/bus_driver.sv 
 tb/bus_if.sv 
 Tb/bus_monitor.sv 
+Tb/bus_monitor_ctrl.sv
 Tb/bus_scoreboard.sv 
 Tb/bus_checker.sv 
 tb/bus_env.sv 
